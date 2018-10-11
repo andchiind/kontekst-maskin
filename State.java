@@ -35,10 +35,23 @@ public class State {
     }
 
     public String getOutput(String input) {
+
+        if (!fsminterpreter.getInputSet().contains(input)) {
+            System.out.println("THIS DOESN'T MAKE SENSE");
+            System.exit(0);
+            //TODO Make program quit in a neat way
+        }
         return outputMap.get(input);
+
     }
 
     public String getNextState(String input) {
+
+        if (!fsminterpreter.getInputSet().contains(input)) {
+            System.out.println("THIS DOESN'T MAKE SENSE");
+            System.exit(0);
+            //TODO Make program quit in a neat way
+        }
         return nextStateMap.get(input);
     }
 

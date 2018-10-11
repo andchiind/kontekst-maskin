@@ -7,6 +7,7 @@ public class fsminterpreter {
     private static State currentState;
     private static HashSet<State> states = new HashSet<>();
     private static ConcurrentLinkedQueue<String> inputs = new ConcurrentLinkedQueue<>();
+    private static HashSet<String> inputSet = new HashSet<>();
 
     private static void readInstructions(String fileName) {
 
@@ -40,11 +41,17 @@ public class fsminterpreter {
         }
     }
 
+    public static HashSet<String> getInputSet() {
+        return inputSet;
+    }
+
     public static void main(String[] args) {
 
         readInstructions(args[0]);
 
-        inputs.addAll(Arrays.asList(args).subList(1, args.length));
+        inputSet.addAll(Arrays.asList(args).subList(1, args.length));
+
+        inputs.addAll(inputSet);
 
         while (!inputs.isEmpty()) {
 
