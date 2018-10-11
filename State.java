@@ -13,7 +13,6 @@ public class State {
         this.name = name;
 
         addMapping(input, output, next);
-
     }
 
     public void addMapping(String input, String output, String next) {
@@ -41,6 +40,7 @@ public class State {
             System.exit(0);
             //TODO Make program quit in a neat way
         }
+        //System.out.println("Output: " + outputMap.get(input));
         return outputMap.get(input);
 
     }
@@ -52,6 +52,7 @@ public class State {
             System.exit(0);
             //TODO Make program quit in a neat way
         }
+        //System.out.println("Next state: " + nextStateMap.get(input));
         return nextStateMap.get(input);
     }
 

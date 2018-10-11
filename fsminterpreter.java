@@ -49,9 +49,9 @@ public class fsminterpreter {
 
         readInstructions(args[0]);
 
-        inputSet.addAll(Arrays.asList(args).subList(1, args.length));
+        inputs.addAll(Arrays.asList(args).subList(1, args.length));
 
-        inputs.addAll(inputSet);
+        inputSet.addAll(inputs);
 
         while (!inputs.isEmpty()) {
 
@@ -63,6 +63,7 @@ public class fsminterpreter {
                 if (state.getName().equals(currentState.getNextState(inputs.peek()))) {
                     currentState = state;
                     inputs.poll();
+                    break;
                 }
             }
 
@@ -72,6 +73,7 @@ public class fsminterpreter {
                 System.exit(0);
             }
         }
+        System.out.print("\n");
 
     }
 }
