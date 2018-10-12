@@ -17,25 +17,71 @@ public class fsminterpreter {
 
         int n = 0;
 
+        HashSet<String> nextStates = new HashSet<>();
+
         for (String line : fileLine) {
 
             String[] elements = line.split(" ");
 
             boolean exists = false;
 
-            for (State state : states) {
-                if (state.getName().equals(elements[0])) {
-                    state.addMapping(elements[1], elements[2], elements[3]);
-                    exists = true;
-                }
-            }
+            if (elements.length == 4) {
 
-            if (!exists) {
-                states.add(new State(elements[0], elements[1], elements[2], elements[3]));
-                if (n == 0) {
-                    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                    currentState = (State)states.toArray()[0];
-                    n++;
+                inputSet.add(elements[1]);
+
+                nextStates.add(elements[3]);
+
+                for (State state : states) {
+                    if (state.getName().equals(elements[0])) {
+                        state.addMapping(elements[1], elements[2], elements[3]);
+                        exists = true;
+                    }
+                }
+
+                if (!exists) {
+                    states.add(new State(elements[0], elements[1], elements[2], elements[3]));
+                    if (n == 0) {
+                        //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                        currentState = (State) states.toArray()[0];
+                        n++;
+                    }
+                }
+            } else {
+                System.out.println("Bad description");
+                System.exit(0);
+            }
+        }
+        for (State state : states) {
+            if (!nextStates.contains(state.getName())) {
+                System.out.println("Bad description");
+                System.exit(0);
+            }
+        }
+        if (nextStates.size() != states.size()) {
+            System.out.println("Bad description");
+            System.exit(0);
+        }
+    }
+
+    private static void testStates() {
+
+        boolean found = false;
+
+        for (State state : states) {
+
+            if (state != currentState) {
+                found = false;
+                state.checkInputSet();
+                for (State state1 : states) {
+                    if (state1.checkNextState(state)) {
+
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    System.out.println("Bad description");
+                    System.exit(0);
                 }
             }
         }
@@ -49,9 +95,20 @@ public class fsminterpreter {
 
         readInstructions(args[0]);
 
-        inputs.addAll(Arrays.asList(args).subList(1, args.length));
+        if (args[args.length - 1].startsWith("<")) {
 
-        inputSet.addAll(inputs);
+            String commands = ReadFile.readFile(args[args.length - 1].replaceFirst("<", ""));
+            commands = commands.substring(0, commands.length() - 1);
+            String[] inputsFile = commands.split("");
+            inputs.addAll(Arrays.asList(inputsFile));
+
+        } else {
+
+            inputs.addAll(Arrays.asList(args).subList(1, args.length));
+
+        }
+
+        testStates();
 
         while (!inputs.isEmpty()) {
 
@@ -68,8 +125,7 @@ public class fsminterpreter {
             }
 
             if (size == inputs.size()) {
-                System.out.println("SHIT AIN'T GOOD"); //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
-                //TODO make this proper and pretty
+                System.out.println("Bad input");
                 System.exit(0);
             }
         }

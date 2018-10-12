@@ -7,6 +7,7 @@ public class State {
     private HashMap<String, String> outputMap = new HashMap<>();
     private HashMap<String, String> nextStateMap = new HashMap<>();
     private HashSet<String> inputSet = new HashSet<>();
+    private HashSet<String> nextStateSet = new HashSet<>();
 
     public State(String name, String input, String output, String next) {
 
@@ -21,10 +22,10 @@ public class State {
             inputSet.add(input);
             outputMap.put(input, output);
             nextStateMap.put(input, next);
+            nextStateSet.add(next);
         } else {
-            System.out.println("THIS DOESN'T MAKE SENSE");
+            System.out.println("Bad description");
             System.exit(0);
-            //TODO Make program quit in a neat way
         }
 
     }
@@ -36,11 +37,9 @@ public class State {
     public String getOutput(String input) {
 
         if (!fsminterpreter.getInputSet().contains(input)) {
-            System.out.println("THIS DOESN'T MAKE SENSE");
+            System.out.println("Bad input");
             System.exit(0);
-            //TODO Make program quit in a neat way
         }
-        //System.out.println("Output: " + outputMap.get(input));
         return outputMap.get(input);
 
     }
@@ -48,12 +47,23 @@ public class State {
     public String getNextState(String input) {
 
         if (!fsminterpreter.getInputSet().contains(input)) {
-            System.out.println("THIS DOESN'T MAKE SENSE");
+            System.out.println("Bad input");
             System.exit(0);
-            //TODO Make program quit in a neat way
         }
-        //System.out.println("Next state: " + nextStateMap.get(input));
         return nextStateMap.get(input);
+    }
+
+    public void checkInputSet() {
+        for (String input : fsminterpreter.getInputSet()) {
+            if (!inputSet.contains(input)) {
+                System.out.println("Bad description");
+                System.exit(0);
+            }
+        }
+    }
+
+    public boolean checkNextState(State state) {
+        return nextStateSet.contains(state.getName()) && !state.getName().equals(name);
     }
 
 }
