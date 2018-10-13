@@ -5,10 +5,10 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-public class fsminterpreter {
+public class fsminterpreterExt {
 
-    private static State currentState;
-    private static HashSet<State> states = new HashSet<>();
+    private static StateExt currentState;
+    private static HashSet<StateExt> states = new HashSet<>();
     private static ConcurrentLinkedQueue<String> inputs = new ConcurrentLinkedQueue<>();
     private static HashSet<String> inputSet = new HashSet<>();
 
@@ -51,7 +51,7 @@ public class fsminterpreter {
 
             nextStates.add(elements[3]);
 
-            for (State state : states) {
+            for (StateExt state : states) {
                 if (state.getName().equals(elements[0])) {
                     state.addMapping(elements[1], elements[2], elements[3]);
                     exists = true;
@@ -59,15 +59,15 @@ public class fsminterpreter {
             }
 
             if (!exists) {
-                states.add(new State(elements[0], elements[1], elements[2], elements[3]));
+                states.add(new StateExt(elements[0], elements[1], elements[2], elements[3]));
                 if (n == 0) {
-                    currentState = (State) states.toArray()[0];
+                    currentState = (StateExt) states.toArray()[0];
                     n++;
                 }
             }
         }
 
-        for (State state : states) {
+        for (StateExt state : states) {
             if (!nextStates.contains(state.getName())) {
                 System.out.println("Bad description");
                 System.exit(0);
@@ -83,13 +83,13 @@ public class fsminterpreter {
 
         boolean found = false;
 
-        for (State state : states) {
+        for (StateExt state : states) {
 
             state.checkInputSet();
 
             if (state != currentState) { //No other states need to be able to lead back to the initial state
                 found = false;
-                for (State state1 : states) {
+                for (StateExt state1 : states) {
                     if (state1.checkNextState(state)) {
 
                         found = true;
@@ -112,7 +112,13 @@ public class fsminterpreter {
 
             System.out.print(currentState.getOutput(inputs.peek()));
 
-            for (State state : states) {
+            StateExt temp = currentState;
+
+            nonDeterministic(inputs, 0);
+
+            currentState = temp;
+
+            for (StateExt state : states) {
                 if (state.getName().equals(currentState.getNextState(inputs.peek()))) {
                     currentState = state;
                     inputs.poll();
@@ -124,6 +130,25 @@ public class fsminterpreter {
                 System.out.println("Bad input");
                 System.exit(0);
             }
+        }
+    }
+
+    private static String nonDeterministic(ConcurrentLinkedQueue<String> currentQueue, int option) {
+        if (currentState.getOutputRec(currentQueue.peek()).length > 1 && currentState.getOutputRec(currentQueue.peek()).length < option) {
+
+            System.out.print(currentState.getOutputRec(currentQueue.poll())[option]);
+
+            for (StateExt state : states) {
+                if (state.getName().equals(currentState.getNextStateRec(currentQueue.peek())[option])) {
+                    currentState = state;
+                    break;
+                }
+            }
+
+            nonDeterministic(currentQueue, option++);
+
+        } else {
+            System.out.println(currentState.getOutputRec(inputs.poll())[0]);
         }
     }
 

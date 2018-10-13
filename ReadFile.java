@@ -12,9 +12,7 @@ public class ReadFile {
 
         try {
 
-            //File file = new File(System.getProperty("user.dir") + File.separator + name);
             File file = new File(name);
-
 
             if (file.exists() && file.isFile()) {
 

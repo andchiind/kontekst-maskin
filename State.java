@@ -40,8 +40,8 @@ public class State {
             System.out.println("Bad input");
             System.exit(0);
         }
-        return outputMap.get(input);
 
+        return outputMap.get(input);
     }
 
     public String getNextState(String input) {
