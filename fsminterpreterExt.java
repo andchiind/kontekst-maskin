@@ -110,13 +110,18 @@ public class fsminterpreterExt {
 
             int size = inputs.size();
 
-            System.out.print(currentState.getOutput(inputs.peek()));
+            //System.out.print(currentState.getOutputRec(inputs.peek()).get(0));
 
             StateExt temp = currentState;
+            ConcurrentLinkedQueue tempQueue = inputs;
 
-            nonDeterministic(inputs, 0);
+            //nonDeterministic(inputs, 0);
 
-            currentState = temp;
+            rec(temp.getName());
+
+            //currentState = temp;
+
+            inputs = tempQueue;
 
             for (StateExt state : states) {
                 if (state.getName().equals(currentState.getNextState(inputs.peek()))) {
@@ -133,22 +138,76 @@ public class fsminterpreterExt {
         }
     }
 
-    private static String nonDeterministic(ConcurrentLinkedQueue<String> currentQueue, int option) {
-        if (currentState.getOutputRec(currentQueue.peek()).length > 1 && currentState.getOutputRec(currentQueue.peek()).length < option) {
+    private static void rec(String stateName) {
 
-            System.out.print(currentState.getOutputRec(currentQueue.poll())[option]);
+        StateExt state = null;
 
-            for (StateExt state : states) {
-                if (state.getName().equals(currentState.getNextStateRec(currentQueue.peek())[option])) {
-                    currentState = state;
-                    break;
+        for (StateExt currentState : states) {
+            if (currentState.getName().equals(stateName)) {
+                state = currentState;
+            }
+        }
+
+        int option = 0;
+
+        ConcurrentLinkedQueue nextItem = inputs;
+
+        nextItem.poll();
+
+        System.out.println("name: " + state.getName() + " content: " + state.getOutputRec(inputs.peek()));
+
+        assert state != null;
+        while (option < state.getOutputRec(inputs.peek()).size()) {
+
+            for (StateExt nextState : states) {
+
+                if (state.getNextStateRec(inputs.peek()).size() > option && nextState.getName().equals(state.getNextStateRec(inputs.peek()).get(option))) {
+
+                    if (nextState.getOutputRec((String) nextItem.peek()).size() == 1) {
+
+                        System.out.println(state.getOutputRec(inputs.peek()).get(option));
+                        System.out.println(state.getOutputRec(inputs.peek()) + " " + inputs.peek() + " " + state.getName() + " " + option);
+
+                        int tempOption = option;
+                        StateExt tempState = state;
+                        ConcurrentLinkedQueue tempQueue = inputs;
+
+                        if (inputs.size() > 0) {
+
+                            rec(state.getNextStateRec(inputs.poll()).get(option));
+
+                        }
+
+                        option = tempOption;
+                        state = tempState;
+                        inputs = tempQueue;
+
+                        option++;
+
+                    } else {
+
+                        System.out.println(state.getOutputRec(inputs.peek()).get(option));
+                        System.out.println(state.getOutputRec(inputs.peek()) + " " + inputs.peek() + " " + state.getName());
+
+                        int tempOption = option;
+                        StateExt tempState = state;
+                        ConcurrentLinkedQueue tempQueue = inputs;
+
+                        if (inputs.size() > 0) {
+
+                            rec(state.getNextStateRec(inputs.poll()).get(option));
+
+                        }
+
+                        option = tempOption;
+                        state = tempState;
+                        inputs = tempQueue;
+
+                        option++;
+
+                    }
                 }
             }
-
-            nonDeterministic(currentQueue, option++);
-
-        } else {
-            System.out.println(currentState.getOutputRec(inputs.poll())[0]);
         }
     }
 

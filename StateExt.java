@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -5,9 +6,9 @@ public class StateExt extends State{
 
     private String name;
     private HashMap<String, String> outputMap = new HashMap<>(); //String, String[] !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    private HashMap<String, String[]> outputMapRec = new HashMap<>();
+    private HashMap<String, ArrayList<String>> outputMapRec = new HashMap<>();
     private HashMap<String, String> nextStateMap = new HashMap<>();
-    private HashMap<String, String[]> nextStateMapRec = new HashMap<>(); //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    private HashMap<String, ArrayList<String>> nextStateMapRec = new HashMap<>(); //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     private HashSet<String> inputSet = new HashSet<>();
     private HashSet<String> nextStateSet = new HashSet<>();
 
@@ -20,15 +21,27 @@ public class StateExt extends State{
 
     public void addMapping(String input, String output, String next) {
 
-        if (!inputSet.contains(input)) {
+        //if (!inputSet.contains(input)) {
+            if (inputSet.contains(input)) {
+                outputMapRec.get(input).add(output);
+                nextStateMapRec.get(input).add(next);
+                return;
+            }
+
             inputSet.add(input);
-            outputMap.put(input, output);
-            nextStateMap.put(input, next);
+
+            outputMapRec.put(input, new ArrayList<>());
+            outputMapRec.get(input).add(output);
+
+            nextStateMapRec.put(input, new ArrayList<>());
+            nextStateMapRec.get(input).add(next);
+
             nextStateSet.add(next);
-        } else {
+        /*} else {
+            System.out.println("meep");
             System.out.println("Bad description");
             System.exit(0);
-        }
+        }*/
 
     }
 
@@ -45,7 +58,7 @@ public class StateExt extends State{
         return nextStateMap.get(input);
     }
 
-    public String[] getNextStateRec(String input) {
+    public ArrayList<String> getNextStateRec(String input) {
 
         if (!fsminterpreterExt.getInputSet().contains(input)) {
             System.out.println("Bad input");
@@ -69,7 +82,7 @@ public class StateExt extends State{
 
     }
 
-    public String[] getOutputRec(String input) {
+    public ArrayList<String> getOutputRec(String input) {
 
         if (!fsminterpreterExt.getInputSet().contains(input)) {
             System.out.println("Bad input");
@@ -87,7 +100,7 @@ public class StateExt extends State{
     public void checkInputSet() {
         for (String input : fsminterpreterExt.getInputSet()) {
             if (!inputSet.contains(input)) {
-                //TODO "Fill in the blanks"
+                //TODO "Fill in the blanks" !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 addMapping(input, "", name);
             }
         }
