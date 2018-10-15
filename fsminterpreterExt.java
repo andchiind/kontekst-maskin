@@ -1,8 +1,10 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Stack;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class fsminterpreterExt {
@@ -11,6 +13,7 @@ public class fsminterpreterExt {
     private static HashSet<StateExt> states = new HashSet<>();
     private static ConcurrentLinkedQueue<String> inputs = new ConcurrentLinkedQueue<>();
     private static HashSet<String> inputSet = new HashSet<>();
+    private static Stack<ConcurrentLinkedQueue<String>> queueList = new Stack<>();
 
     public static void main(String[] args) {
 
@@ -106,43 +109,23 @@ public class fsminterpreterExt {
 
     private static void simulate() {
 
-        while (!inputs.isEmpty()) {
+        StateExt temp = currentState;
+        ConcurrentLinkedQueue tempQueue = inputs;
 
-            int size = inputs.size();
+        queueList.add(inputs);
 
-            //System.out.print(currentState.getOutputRec(inputs.peek()).get(0));
+        System.out.print(rec(temp.getName()).trim());
 
-            StateExt temp = currentState;
-            ConcurrentLinkedQueue tempQueue = inputs;
+        inputs = tempQueue;
+        inputs.poll();
 
-            //nonDeterministic(inputs, 0);
-
-            rec(temp.getName());
-
-            //currentState = temp;
-
-            inputs = tempQueue;
-            inputs.poll();
-
-            /*for (StateExt state : states) {
-                if (state.getName().equals(currentState.getNextStateRec(inputs.peek()[0]))) {
-                    currentState = state;
-                    inputs.poll();
-                    break;
-                }
-            }*/
-
-            if (size == inputs.size()) {
-                System.out.println("weep");
-                System.out.println("Bad input");
-                System.exit(0);
-            }
-        }
     }
 
-    private static void rec(String stateName) {
+    private static String rec(String stateName) {
 
         StateExt state = null;
+
+        StringBuilder builder = new StringBuilder();
 
         for (StateExt currentState : states) {
             if (currentState.getName().equals(stateName)) {
@@ -152,12 +135,6 @@ public class fsminterpreterExt {
 
         int option = 0;
 
-        /*ConcurrentLinkedQueue nextItem = inputs;
-
-        nextItem.poll();*/
-
-        //System.out.println("name: " + state.getName() + " content: " + state.getOutputRec(inputs.peek()));
-
         assert state != null;
         assert inputs.size() > 0;
         while (option < state.getOutputRec(inputs.peek()).size()) {
@@ -166,31 +143,36 @@ public class fsminterpreterExt {
 
                 if (state.getNextStateRec(inputs.peek()).size() > option && nextState.getName().equals(state.getNextStateRec(inputs.peek()).get(option))) {
 
-                    //if (nextState.getOutputRec((String) nextItem.peek()).size() == 1) {
-
-                        System.out.println(state.getOutputRec(inputs.peek()).get(option));
-                        System.out.println(state.getOutputRec(inputs.peek()) + " " + inputs.peek() + " " + state.getName() + " " + option);
+                    if (inputs.size() > 1) {
 
                         int tempOption = option;
                         StateExt tempState = state;
+
                         ConcurrentLinkedQueue tempQueue = inputs;
 
-                        if (inputs.size() > 1) {
+                        queueList.add(new ConcurrentLinkedQueue<String>(tempQueue));
 
-                            System.out.println("inputsize: " + inputs.size());
+                        builder.append(state.getOutputRec(inputs.peek()).get(option));
 
-                            rec(state.getNextStateRec(inputs.poll()).get(option));
+                        String next = rec(state.getNextStateRec(inputs.poll()).get(option));
 
-                        }
+                        builder.append(next + "\n");
 
                         option = tempOption;
                         state = tempState;
-                        inputs = tempQueue;
+                        inputs = queueList.pop();
 
-                        option++;
+                    } else {
+
+                        builder.append(state.getOutputRec(inputs.peek()).get(option));
+
+                        return builder.toString();
+                    }
+                    option++;
                 }
             }
         }
+        return builder.toString().trim();
     }
 
     public static HashSet<String> getInputSet() {

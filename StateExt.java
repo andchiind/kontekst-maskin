@@ -5,10 +5,8 @@ import java.util.HashSet;
 public class StateExt {
 
     private String name;
-    private HashMap<String, String> outputMap = new HashMap<>(); //String, String[] !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     private HashMap<String, ArrayList<String>> outputMapRec = new HashMap<>();
-    private HashMap<String, String> nextStateMap = new HashMap<>();
-    private HashMap<String, ArrayList<String>> nextStateMapRec = new HashMap<>(); //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    private HashMap<String, ArrayList<String>> nextStateMapRec = new HashMap<>();
     private HashSet<String> inputSet = new HashSet<>();
     private HashSet<String> nextStateSet = new HashSet<>();
 
@@ -102,7 +100,6 @@ public class StateExt {
     public void checkInputSet() {
         for (String input : fsminterpreterExt.getInputSet()) {
             if (!inputSet.contains(input)) {
-                //TODO "Fill in the blanks" !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 addMapping(input, "", name);
             }
         }
