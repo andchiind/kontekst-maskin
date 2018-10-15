@@ -2,7 +2,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
-public class StateExt extends State{
+public class StateExt {
 
     private String name;
     private HashMap<String, String> outputMap = new HashMap<>(); //String, String[] !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -49,25 +49,26 @@ public class StateExt extends State{
         return name;
     }
 
-    public String getNextState(String input) {
+    /*public String getNextState(String input) {
 
         if (!fsminterpreterExt.getInputSet().contains(input)) {
             System.out.println("Bad input");
             System.exit(0);
         }
         return nextStateMap.get(input);
-    }
+    }*/
 
     public ArrayList<String> getNextStateRec(String input) {
 
         if (!fsminterpreterExt.getInputSet().contains(input)) {
+            System.out.println("beep");
             System.out.println("Bad input");
             System.exit(0);
         }
         return nextStateMapRec.get(input);
     }
 
-    @Override
+    /*@Override
     public String getOutput(String input) {
 
         if (!fsminterpreterExt.getInputSet().contains(input)) {
@@ -80,11 +81,13 @@ public class StateExt extends State{
         }
         return outputMap.get(input);
 
-    }
+    }*/
 
     public ArrayList<String> getOutputRec(String input) {
 
         if (!fsminterpreterExt.getInputSet().contains(input)) {
+            System.out.println("input: " + input);
+            System.out.println("meep");
             System.out.println("Bad input");
             System.exit(0);
         }
@@ -96,7 +99,6 @@ public class StateExt extends State{
         return nextStateSet.contains(state.getName()) && !state.getName().equals(name);
     }
 
-    @Override
     public void checkInputSet() {
         for (String input : fsminterpreterExt.getInputSet()) {
             if (!inputSet.contains(input)) {

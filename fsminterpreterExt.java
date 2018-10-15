@@ -122,16 +122,18 @@ public class fsminterpreterExt {
             //currentState = temp;
 
             inputs = tempQueue;
+            inputs.poll();
 
-            for (StateExt state : states) {
-                if (state.getName().equals(currentState.getNextState(inputs.peek()))) {
+            /*for (StateExt state : states) {
+                if (state.getName().equals(currentState.getNextStateRec(inputs.peek()[0]))) {
                     currentState = state;
                     inputs.poll();
                     break;
                 }
-            }
+            }*/
 
             if (size == inputs.size()) {
+                System.out.println("weep");
                 System.out.println("Bad input");
                 System.exit(0);
             }
@@ -150,20 +152,21 @@ public class fsminterpreterExt {
 
         int option = 0;
 
-        ConcurrentLinkedQueue nextItem = inputs;
+        /*ConcurrentLinkedQueue nextItem = inputs;
 
-        nextItem.poll();
+        nextItem.poll();*/
 
-        System.out.println("name: " + state.getName() + " content: " + state.getOutputRec(inputs.peek()));
+        //System.out.println("name: " + state.getName() + " content: " + state.getOutputRec(inputs.peek()));
 
         assert state != null;
+        assert inputs.size() > 0;
         while (option < state.getOutputRec(inputs.peek()).size()) {
 
             for (StateExt nextState : states) {
 
                 if (state.getNextStateRec(inputs.peek()).size() > option && nextState.getName().equals(state.getNextStateRec(inputs.peek()).get(option))) {
 
-                    if (nextState.getOutputRec((String) nextItem.peek()).size() == 1) {
+                    //if (nextState.getOutputRec((String) nextItem.peek()).size() == 1) {
 
                         System.out.println(state.getOutputRec(inputs.peek()).get(option));
                         System.out.println(state.getOutputRec(inputs.peek()) + " " + inputs.peek() + " " + state.getName() + " " + option);
@@ -172,7 +175,9 @@ public class fsminterpreterExt {
                         StateExt tempState = state;
                         ConcurrentLinkedQueue tempQueue = inputs;
 
-                        if (inputs.size() > 0) {
+                        if (inputs.size() > 1) {
+
+                            System.out.println("inputsize: " + inputs.size());
 
                             rec(state.getNextStateRec(inputs.poll()).get(option));
 
@@ -183,29 +188,6 @@ public class fsminterpreterExt {
                         inputs = tempQueue;
 
                         option++;
-
-                    } else {
-
-                        System.out.println(state.getOutputRec(inputs.peek()).get(option));
-                        System.out.println(state.getOutputRec(inputs.peek()) + " " + inputs.peek() + " " + state.getName());
-
-                        int tempOption = option;
-                        StateExt tempState = state;
-                        ConcurrentLinkedQueue tempQueue = inputs;
-
-                        if (inputs.size() > 0) {
-
-                            rec(state.getNextStateRec(inputs.poll()).get(option));
-
-                        }
-
-                        option = tempOption;
-                        state = tempState;
-                        inputs = tempQueue;
-
-                        option++;
-
-                    }
                 }
             }
         }
@@ -216,6 +198,7 @@ public class fsminterpreterExt {
     }
 
     private static void readInputs() {
+
         try {
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
